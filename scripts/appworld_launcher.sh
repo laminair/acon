@@ -5,4 +5,4 @@
     --split "${DATA_SPLIT}" \
     --model_name "${LLM}" \
     --tag baseline \
-    --co_config_path /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/"${BENCHMARK}"/"${PROVIDER}"/"${SLURM_JOB_NAME}".yaml
+    --co_config_path /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/configs/acon/"${BENCHMARK}"/"${PROVIDER}"/"${SLURM_JOB_NAME}".yaml
