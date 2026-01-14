@@ -2,8 +2,7 @@
 
 cd /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/"${BENCHMARK}"/
 
-/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/.venv/bin/python \
-    run_all.py \
+uv run run_all.py \
     --split "${DATA_SPLIT}" \
     --model_name "${LLM}" \
     --tag baseline \
