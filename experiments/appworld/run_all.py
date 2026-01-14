@@ -30,9 +30,9 @@ def setup_logging():
         logging.getLogger(logger_name).setLevel(logging.WARNING)
 
 
-def load_base_config(tag: str, model_name: str, use_workflow_memory: bool = False, co_config: dict = None) -> dict:
+def load_base_config(tag: str, model_name: str, base_config_path: str, use_workflow_memory: bool = False, co_config: dict = None) -> dict:
     """Load and create minimal configuration."""
-    base_config_path = Path("configs/base_config.yaml")
+    base_config_path = Path(base_config_path)
     
     if base_config_path.exists():
         with open(base_config_path) as f:
@@ -94,7 +94,8 @@ def main_runner():
     parser.add_argument("--lora_name", type=str, help="LoRA model name for agent", default=None)
     parser.add_argument("--verbose", action='store_true', help="Verbose output")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for LLM generation")
-    
+    parser.add_argument("--base-config", type=int, default="config/base_config.yaml", help="Appworld experiment base config file")
+
     # Parse the arguments
     args = parser.parse_args()
     
@@ -120,6 +121,7 @@ def main_runner():
 
     # Create minimal configuration
     exp_config = load_base_config(
+	    base_config_path=args.base_config,
         tag=args.tag,
         model_name=args.model_name,
         use_workflow_memory=args.use_workflow_memory,
