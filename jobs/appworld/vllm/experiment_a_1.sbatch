@@ -14,7 +14,7 @@ VLLM_PORT="8000"
 TENSOR_PARALLEL=1
 
 # Use script filename for config path (different from job name)
-SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}" .sh)
+SLURM_JOB_NAME=$(basename "${BASH_SOURCE[0]}" .sh)
 
 cd "$(dirname "$0")"
 
@@ -35,7 +35,7 @@ enroot start \
     -e TENSOR_PARALLEL="${TENSOR_PARALLEL}" \
     -e BENCHMARK="${BENCHMARK}" \
     -e DATA_SPLIT="${DATA_SPLIT}" \
-    -e CONFIG_NAME="${SCRIPT_NAME}" \
+    -e SLURM_JOB_NAME="${SLURM_JOB_NAME}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
     acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/"${BENCHMARK}"_launcher.sh
