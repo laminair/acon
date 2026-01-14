@@ -1,6 +1,6 @@
 type: "history"
 model: "Qwen/Qwen3-8B"
-model_type: "local"
+model_type: "vllm"
 compressor_type: "full"
 prompts:
   prompt_system: "system_prompt"
