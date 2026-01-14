@@ -3,11 +3,11 @@
 #SBATCH --gres=gpu:1
 #SBATCH --time=02:00:00
 #SBATCH -o output_%x_%j.out
-#SBATCH --job-name=experiment_a_1
+#SBATCH --job-name=experiment_b_1
 
 LLM="Qwen/Qwen3-8B"
-BENCHMARK="appworld"
-APPWORLD_ROOT="/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/appworld"
+BENCHMARK="officebench"
+APPWORLD_ROOT="/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/officebench"
 DATA_SPLIT="train"
 VLLM_USE_V1=1
 PROVIDER="vllm"

@@ -23,6 +23,11 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
+from pathlib import Path
+
+
+FILE_PATH = Path(__file__).parent
+
 def setup_logging():
     """Setup logging configuration."""
     logging.basicConfig(
@@ -33,9 +38,9 @@ def setup_logging():
     for logger_name in ["httpx", "azure.identity", "azure.core"]:
         logging.getLogger(logger_name).setLevel(logging.WARNING)
 
-def load_base_config(tag: str, model_name: str, use_workflow_memory: bool = False, co_config: dict = None) -> dict:
+def load_base_config(tag: str, model_name: str, base_config_path: str, use_workflow_memory: bool = False, co_config: dict = None) -> dict:
     """Load and create minimal configuration."""
-    base_config_path = Path("configs/base_config.yaml")
+    base_config_path = Path(base_config_path)
     
     if base_config_path.exists():
         with open(base_config_path) as f:
@@ -53,7 +58,7 @@ def load_base_config(tag: str, model_name: str, use_workflow_memory: bool = Fals
         'max_iter': 50,
         'use_workflow_memory': use_workflow_memory,
         'use_thinking_tokens': True,
-        'prompt_file': "./prompts/prompts_v3.json",
+        'prompt_file': f"{FILE_PATH}/prompts/prompts_v3.json",
         'co_config': co_config
     })
     
@@ -70,7 +75,7 @@ def load_task_ids_from_split(split: str) -> list:
     Returns:
         List of task IDs for the split
     """
-    split_file = f"{split}_tasks.txt"
+    split_file = f"{FILE_PATH}/{split}_tasks.txt"
     if not os.path.exists(split_file):
         raise FileNotFoundError(f"Split file {split_file} not found. Please run split_tasks.py first.")
     
@@ -91,6 +96,7 @@ parser.add_argument("--output_dir", type=str, help="output directory", default=N
 parser.add_argument("--co_config_path", type=str, help="Context optimization config file", default=None)
 parser.add_argument("--debug", action='store_true', help="Enable debug mode")
 parser.add_argument("--lora_name", type=str, help="LoRA model name for agent", default=None)
+parser.add_argument("--base-config", type=str, help="Path to base configuration of benchmark", default=None)
 
 # Parse the arguments
 args = parser.parse_args()
@@ -106,6 +112,7 @@ if args.co_config_path and os.path.exists(args.co_config_path):
 # Create minimal configuration
 exp_config = load_base_config(
     tag=args.tag,
+    base_config_path=args.base_config,
     model_name=args.model_name,
     use_workflow_memory=args.use_workflow_memory,
     co_config=co_config
@@ -128,7 +135,7 @@ else:
     task_list = load_task_ids_from_split(args.split)
     print(f"Running all tasks from {args.split} split: {len(task_list)} tasks")
 
-output_root_dir = f'./outputs/{args.model_name.replace("/","_")}_{args.tag}/{args.split}/'
+output_root_dir = f'{FILE_PATH}/outputs/{args.model_name.replace("/","_")}_{args.tag}/{args.split}/'
 
 start_time = time.time()
 successful_tasks = []
