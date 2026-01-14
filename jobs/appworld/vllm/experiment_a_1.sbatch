@@ -14,9 +14,6 @@ PROVIDER="vllm"
 VLLM_PORT="8000"
 TENSOR_PARALLEL=1
 
-# Use script filename for config path (different from job name)
-SLURM_JOB_NAME=$(basename "${BASH_SOURCE[0]}" .sh)
-
 cd "$(dirname "$0")"
 
 nvidia-smi
