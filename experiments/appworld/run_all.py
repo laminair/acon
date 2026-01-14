@@ -94,7 +94,7 @@ def main_runner():
     parser.add_argument("--lora_name", type=str, help="LoRA model name for agent", default=None)
     parser.add_argument("--verbose", action='store_true', help="Verbose output")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for LLM generation")
-    parser.add_argument("--base-config", type=int, default="config/base_config.yaml", help="Appworld experiment base config file")
+    parser.add_argument("--base-config", type=str, default="config/base_config.yaml", help="Appworld experiment base config file")
 
     # Parse the arguments
     args = parser.parse_args()
