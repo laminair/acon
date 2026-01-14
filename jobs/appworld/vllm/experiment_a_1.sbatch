@@ -7,7 +7,7 @@
 
 LLM="Qwen/Qwen3-8B"
 BENCHMARK="appworld"
-APPWORLD_ROOT="/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/appworld/data"
+APPWORLD_ROOT="/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/appworld"
 DATA_SPLIT="train"
 VLLM_USE_V1=1
 PROVIDER="vllm"
