@@ -19,7 +19,7 @@ SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}" .sh)
 cd "$(dirname "$0")"
 
 nvidia-smi
-enroot create /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon.sqsh
+enroot create /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/acon_v2.sqsh
 
 # Launch ACON evals
 enroot start \
@@ -38,4 +38,4 @@ enroot start \
     -e CONFIG_NAME="${SCRIPT_NAME}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
-    acon /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/"${BENCHMARK}"_launcher.sh
+    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/"${BENCHMARK}"_launcher.sh
