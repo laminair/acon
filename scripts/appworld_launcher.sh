@@ -31,13 +31,13 @@ cd /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/"$
 
 # Start vllm in background
 echo "Starting vllm server..."
-uv run -m vllm.entrypoints.openai.api_server \
+uv run vllm serve \
     --model "${LLM}" \
     --host 0.0.0.0 \
     --port 8000 \
     --tensor-parallel-size 1 \
     --dtype auto \
-    --max-model-len 4096 &
+    --max-model-len 131072 &
 
 VLLM_PID=$!
 echo "vllm started with PID: $VLLM_PID"
