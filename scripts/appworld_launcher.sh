@@ -37,8 +37,8 @@ uv run vllm serve \
     --port 8000 \
     --tensor-parallel-size 1 \
     --dtype auto \
-    --max-model-len 131072 &
-
+    --max-model-len 38912 &
+    # See: https://huggingface.co/Qwen/Qwen3-32B#best-practices
 VLLM_PID=$!
 echo "vllm started with PID: $VLLM_PID"
 
