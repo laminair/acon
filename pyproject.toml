@@ -21,7 +21,8 @@ dependencies = [
   "jinja2",
   "openai",
   "PyYAML",
-  "azure-identity"
+  "azure-identity",
+  "vllm>=0.13.0 ; sys_platform != 'darwin'",
 ]
 
 [project.optional-dependencies]

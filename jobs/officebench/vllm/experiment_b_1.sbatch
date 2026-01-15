@@ -8,6 +8,7 @@
 LLM="Qwen/Qwen3-8B"
 BENCHMARK="officebench"
 DATA_SPLIT="train"
+TAG_NAME="baseline"
 VLLM_USE_V1=1
 PROVIDER="vllm"
 VLLM_PORT="8000"
@@ -33,7 +34,7 @@ enroot start \
     -e BENCHMARK="${BENCHMARK}" \
     -e DATA_SPLIT="${DATA_SPLIT}" \
     -e SLURM_JOB_NAME="${SLURM_JOB_NAME}" \
-    -e APPWORLD_ROOT="${APPWORLD_ROOT}" \
+    -e TAG_NAME="${TAG_NAME}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
-    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/launcher.sh
+    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/officebench_launcher.sh

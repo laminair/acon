@@ -37,4 +37,4 @@ enroot start \
     -e APPWORLD_ROOT="${APPWORLD_ROOT}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
-    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/launcher.sh
+    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/appworld_launcher.sh
