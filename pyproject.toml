@@ -23,6 +23,7 @@ dependencies = [
   "PyYAML",
   "azure-identity",
   "vllm>=0.13.0 ; sys_platform != 'darwin'",
+  "wandb>=0.24.0",
 ]
 
 [project.optional-dependencies]
