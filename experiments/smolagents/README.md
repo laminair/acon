@@ -2,6 +2,8 @@
 
 This folder contains all experiment scripts and configs for 8-objective QA benchmarks based on [`smolagents`](https://github.com/huggingface/smolagents).
 
+**Important: Running the smolagents benchmark requires Java to be installed!
+
 
 ## 1. Environment & Data Setup
 

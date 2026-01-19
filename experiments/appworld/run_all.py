@@ -11,12 +11,18 @@ import os
 import json
 import time
 import logging
+import wandb
 import yaml
 from pathlib import Path
 from typing import List, Dict, Any
 
 from run import main
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
+
+from pathlib import Path
+
+
+EXPERIMENT_FOLDER_PATH = Path(__file__).parent
 
 
 def setup_logging():
@@ -94,12 +100,17 @@ def main_runner():
     parser.add_argument("--lora_name", type=str, help="LoRA model name for agent", default=None)
     parser.add_argument("--verbose", action='store_true', help="Verbose output")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for LLM generation")
-    parser.add_argument("--base-config", type=str, default="config/base_config.yaml", help="Appworld experiment base config file")
+    parser.add_argument("--appworld-config", type=str, default=f"{EXPERIMENT_FOLDER_PATH}/configs/base_config.yaml", help="Appworld experiment base config file path")
+    parser.add_argument("--global-config", type=str, default=f"{EXPERIMENT_FOLDER_PATH.parent.parent}configs/global_config.yaml", help="Global experiment config file path")
 
     # Parse the arguments
     args = parser.parse_args()
     
     setup_logging()
+    
+    with open(args.global_config, 'r') as f:
+        global_config = yaml.safe_load(f)
+        f.close() 
     
     # Load co_config if provided
     co_config = None
@@ -121,7 +132,7 @@ def main_runner():
 
     # Create minimal configuration
     exp_config = load_base_config(
-	    base_config_path=args.base_config,
+	    base_config_path=args.appworld_config,
         tag=args.tag,
         model_name=args.model_name,
         use_workflow_memory=args.use_workflow_memory,
@@ -137,6 +148,10 @@ def main_runner():
         "co_config_path": args.co_config_path,
         'seed': args.seed
     })
+    
+    config_to_log = global_config
+    config_to_log.update(exp_config)
+    config_to_log.update(co_config)
     
     # Clear the error log
     if os.path.exists("error.log"):
@@ -186,6 +201,16 @@ def main_runner():
 
     # Progress bar with elapsed and ETA across tasks (disabled in debug for clarity)
     total_tasks = len(task_list)
+    
+    if global_config["wandb"]["enable"] is True and not args.debug:
+        run = wandb.init(
+            entity=global_config["wandb"]["entity"],
+            project=global_config["wandb"]["project_name"], 
+            config=config_to_log
+        )
+    else: 
+        run = None
+
     if args.debug:
         for i, task_id in enumerate(task_list):
             print(f'\n{"="*60}')
@@ -236,7 +261,7 @@ def main_runner():
             transient=False,
         ) as progress:
             pb = progress.add_task("Running tasks", total=total_tasks)
-
+    
             for i, task_id in enumerate(task_list):
                 progress.update(pb, description=f"Task {i+1}/{total_tasks}: {task_id}")
                 print(f'\n{"="*60}')
@@ -279,6 +304,16 @@ def main_runner():
                     failed_tasks.append(task_id)
                     print(f"❌ Task {task_id} failed: {result.get('termination_reason', 'unknown')}")
 
+                if run is not None and "token_usage" in result.keys(): 
+                    run.log({
+                        "token_usage": result.get('token_usage', 0), 
+                        "task_cost": task_cost,
+                        "num_input_tokens": token_info.get('total_input_tokens', 0),
+                        "num_output_tokens": token_info.get('total_output_tokens', 0),
+                        "num_requests": token_info.get('total_requests', 0), 
+                        "status": 0 if result.get('success', False) == False else 1
+                    })
+                    
                 progress.advance(pb, 1)
     
     # Calculate and print experiment summary
@@ -340,6 +375,11 @@ def main_runner():
             'task_costs': task_costs
         }
     }
+    
+    if run is not None: 
+        run.summary.update(summary)
+        run.finish()
+        
     
     summary_path = os.path.join(output_root_dir, 'experiment_summary.json')
     os.makedirs(os.path.dirname(summary_path), exist_ok=True)

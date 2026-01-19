@@ -1,0 +1,5 @@
+# Logging
+wandb:
+  enable: true
+  entity: tum-i13
+  project_name: acon_v0

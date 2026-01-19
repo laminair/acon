@@ -1,20 +1,20 @@
 #!/bin/bash
 #SBATCH -p lrz-hgx-h100-94x4
 #SBATCH --gres=gpu:1
-#SBATCH --time=02:00:00
+#SBATCH --time=01:30:00
 #SBATCH -o output_%x_%j.out
-#SBATCH --job-name=experiment_a_1
+#SBATCH --job-name=experiment_c_1
 
 LLM="Qwen/Qwen3-8B"
-BENCHMARK="appworld"
-APPWORLD_ROOT="/dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/appworld"
+BENCHMARK="smolagents"
 DATA_SPLIT="train"
+TAG_NAME="baseline"
 VLLM_USE_V1=1
 PROVIDER="vllm"
 VLLM_PORT="8000"
 TENSOR_PARALLEL=1
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 
 nvidia-smi
 enroot create /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/acon_v3.sqsh
@@ -34,7 +34,7 @@ enroot start \
     -e BENCHMARK="${BENCHMARK}" \
     -e DATA_SPLIT="${DATA_SPLIT}" \
     -e SLURM_JOB_NAME="${SLURM_JOB_NAME}" \
-    -e APPWORLD_ROOT="${APPWORLD_ROOT}" \
+    -e TAG_NAME="${TAG_NAME}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
-    acon_v3 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/appworld_launcher.sh
+    acon_v3 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/smolagents_launcher.sh

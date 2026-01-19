@@ -24,11 +24,17 @@ dependencies = [
   "azure-identity",
   "vllm>=0.13.0 ; sys_platform != 'darwin'",
   "wandb>=0.24.0",
+  "faiss-cpu>=1.13.2",
+  "datasets>=4.5.0",
+  "transformers>=4.57.5",
+  "pyserini>=1.4.0",
 ]
 
 [project.optional-dependencies]
 smolagents = [
-  "smolagents"
+  "smolagents", 
+  "faiss-cpu", 
+  "pyserini"
 ]
 officebench = [
   "fire==0.5.0",

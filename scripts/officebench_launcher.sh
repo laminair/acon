@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Function to cleanup vllm
+# shellcheck disable=SC2329
 cleanup() {
     echo "Cleaning up vllm process..."
     if [ ! -z "$VLLM_PID" ] && kill -0 $VLLM_PID 2>/dev/null; then
@@ -27,7 +28,7 @@ cleanup() {
 # Set up trap to catch interrupts and exit
 trap cleanup EXIT INT TERM
 
-cd /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/"${BENCHMARK}"/
+cd /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/"${BENCHMARK}"/ || exit
 
 # Start vllm in background
 echo "Starting vllm server..."
@@ -66,8 +67,9 @@ echo "Running ACON experiments..."
 uv run run_all.py \
     --split "${DATA_SPLIT}" \
     --model_name "${LLM}" \
-    --tag baseline \
-    --base-config configs/base_config.yaml \
+    --tag "${TAG_NAME}" \
+    --appworld-config /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/experiments/"${BENCHMARK}"/configs/base_config.yaml \
+    --global-config /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/configs/global_config.yaml \
     --co_config_path /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/configs/"${BENCHMARK}"/"${PROVIDER}"/"${SLURM_JOB_NAME}".yaml
 
 # Capture exit code

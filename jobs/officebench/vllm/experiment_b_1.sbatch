@@ -14,10 +14,10 @@ PROVIDER="vllm"
 VLLM_PORT="8000"
 TENSOR_PARALLEL=1
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 
 nvidia-smi
-enroot create /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/acon_v2.sqsh
+enroot create /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/acon_v3.sqsh
 
 # Launch ACON evals
 enroot start \
@@ -37,4 +37,4 @@ enroot start \
     -e TAG_NAME="${TAG_NAME}" \
     --mount /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/ \
     --mount /dss/dsshome1/09/ge56heh2/ \
-    acon_v2 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/officebench_launcher.sh
+    acon_v3 /bin/bash /dss/dssfs04/lwp-dss-0002/pn72yi/pn72yi-dss-0000/ge56heh2/acon/scripts/officebench_launcher.sh

@@ -9,7 +9,9 @@ Minimal Smolagents + MuSiQue runner
 
 import json
 import os
+import wandb
 import yaml
+
 from dataclasses import asdict
 from types import SimpleNamespace
 from datetime import datetime
@@ -20,6 +22,7 @@ from productive_agents.env.smolagents.env import SmolagentsEnv
 from productive_agents.env.smolagents.config import SmolagentsEnvConfig
 from productive_agents.agents.smolagents.agent import create_smolagents_agent
 from productive_agents.agents.unified_agent import merge_configs
+
 from rich.console import Console
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
@@ -30,6 +33,11 @@ try:
 except Exception:
     # When running as a script from this folder: python run.py
     from dataset import QALoader, QAExample
+    
+from pathlib import Path
+
+
+EXPERIMENT_FOLDER_PATH = Path(__file__).parent
 
 
 def _sanitize_for_path(name: str) -> str:
@@ -119,7 +127,7 @@ def main(
     data_folder: Optional[str] = None,
     co_config_path: Optional[str] = None,
     id_list_file: Optional[str] = None,
-):
+):  
     # Resolve dataset path from split/data_folder if provided.
     # Desired: choose file by split (train/test), reading from data_folder.
     if data_folder:
@@ -158,6 +166,10 @@ def main(
         except Exception as e:
             print(f"Warning: failed to initialize local ctxopt model: {e}")
             model_ctxopt = None
+            
+    with open(args.global_config, 'r') as f:
+        global_config = yaml.safe_load(f)
+        f.close() 
 
     # Optional filtering: load ID list if provided
     filter_ids = None
@@ -217,6 +229,19 @@ def main(
     correct = 0
     f1_sum = 0.0
     all_rows = []
+    
+    config_to_log = global_config
+    # config_to_log.update(exp_config)
+    config_to_log.update(co_config)
+    
+    if global_config["wandb"]["enable"] is True and not args.debug:
+        run = wandb.init(
+            entity=global_config["wandb"]["entity"],
+            project=global_config["wandb"]["project_name"], 
+            config=config_to_log
+        )
+    else: 
+        run = None
 
     # Progress bar with elapsed and ETA
     with Progress(
@@ -264,6 +289,14 @@ def main(
                     "iterations": result.get("iterations", 0),
                     "success": result.get("success", False),
                 })
+                
+                if run is not None:
+                    run.log({
+                        "em_score": em_score, 
+                        "f1_score": f1_score, 
+                        "num_iterations": result.get("iterations", 0),
+                        "success": result.get("success", 0)
+                    })
 
                 # advance progress
                 progress.advance(task_id, 1)
@@ -284,6 +317,23 @@ def main(
         "co_config_path": co_config_path,
         "id_list_file": id_list_file,
     }
+    
+    if run is not None:
+        run.summary.update({
+            "total": n,
+            "avg_em": (correct / n) if n else 0.0,
+            "avg_f1": (f1_sum / n) if n else 0.0,
+            "model": model_name,
+            "split": split,
+            "tag": tag,
+            "experiment_name": experiment_name,
+            "timestamp": datetime.now().isoformat(),
+            "limit": limit,
+            "max_iter": max_iter,
+            "co_config_path": co_config_path,
+        })
+        
+        run.finish()
 
     with open(os.path.join(output_dir, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
@@ -337,6 +387,8 @@ if __name__ == "__main__":
     )
     parser.add_argument("--co_config_path", type=str, default=None, help="Context optimization config file path")
     parser.add_argument("--id_list_file", type=str, default=None, help="Optional file containing example IDs (one per line) to restrict the run")
+    parser.add_argument("--appworld-config", type=str, default=f"{EXPERIMENT_FOLDER_PATH}/configs/base_config.yaml", help="Appworld experiment base config file path")
+    parser.add_argument("--global-config", type=str, default=f"{EXPERIMENT_FOLDER_PATH.parent.parent}configs/global_config.yaml", help="Global experiment config file path")
 
     args = parser.parse_args()
 
