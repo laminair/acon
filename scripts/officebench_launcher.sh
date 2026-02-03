@@ -45,7 +45,7 @@ echo "vllm started with PID: $VLLM_PID"
 
 # Wait for vllm to be ready (health check)
 echo "Waiting for vllm server to be ready..."
-MAX_WAIT=120
+MAX_WAIT=180
 WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
     if curl -s http://localhost:8000/health > /dev/null 2>&1; then

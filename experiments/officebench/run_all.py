@@ -15,9 +15,9 @@ import wandb
 import yaml
 
 from run import main
-from experiments.officebench.evaluation import task_discovery
-from experiments.officebench.evaluation.task_evaluator import TaskEvaluator
-from experiments.officebench.evaluation.main import load_non_image_tasks
+from evaluation import task_discovery
+from evaluation.task_evaluator import TaskEvaluator
+from evaluation.main import load_non_image_tasks
 
 
 from rich.progress import (
@@ -92,7 +92,7 @@ def load_task_ids_from_split(split: str) -> list:
     return task_ids
 
 
-def _process_task(i: int, task: str):
+def _process_task(i: int, task: str, task_list: list, output_root_dir: str, exp_config: dict, ):
     if '-' not in task:
         return
     print(f'\n{"="*60}')
@@ -134,25 +134,15 @@ def _process_task(i: int, task: str):
     wandb.log({
         "task_success": 0 if task_success is False else 1
     })
-    
-    if task_success:
-        successful_tasks.append(task)
-        print(f"✅ Task {task} completed successfully!")
-    else:
-        failed_tasks.append(task)
-        print(f"❌ Task {task} had failures")
+        
+    return task_success
 
 
 def evaluate(
     model_name, 
     tag_name, 
-    result_dir, 
     output_subdir, 
     debug:bool=False, 
-    list_missing:bool=False, 
-    html:bool=False,
-    web:bool=False,
-    task=None,
     only_text:bool=False,
     task_dir="tasks",
     split=None
@@ -279,7 +269,15 @@ def run_experiments(args):
         ) as progress:
             task_id = progress.add_task('OfficeBench Tasks', total=len(task_list))
             for i, task in enumerate(task_list):
-                _process_task(i, task)
+                task_success = _process_task(i, task, task_list=task_list, output_root_dir=output_root_dir, exp_config=exp_config)
+                
+                if task_success:
+                    successful_tasks.append(task)
+                    print(f"✅ Task {task} completed successfully!")
+                else:
+                    failed_tasks.append(task)
+                    print(f"❌ Task {task} had failures")
+                
                 progress.advance(task_id, 1)
 
     # Calculate and print total experiment time
@@ -340,7 +338,8 @@ def run_experiments(args):
     evaluate(
         model_name=args.model_name, 
         tag_name=args.tag, 
-        split=args.split
+        split=args.split, 
+        output_subdir=Path(f"{EXPERIMENT_FOLDER_PATH}/evaluations")
     )
     
     wandb.finish()

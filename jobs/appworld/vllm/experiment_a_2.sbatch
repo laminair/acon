@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --time=02:00:00
 #SBATCH -o output_%x_%j.out
-#SBATCH --job-name=experiment_a_1
+#SBATCH --job-name=experiment_a_2
 
 LLM="Qwen/Qwen3-8B"
 BENCHMARK="appworld"
@@ -13,7 +13,7 @@ VLLM_USE_V1=1
 PROVIDER="vllm"
 VLLM_PORT="8000"
 TENSOR_PARALLEL=1
-TAG_NAME="baseline"
+TAG_NAME="history_compression"
 
 cd "$(dirname "$0")"
 
